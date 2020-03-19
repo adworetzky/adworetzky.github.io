@@ -35,14 +35,38 @@ p {
 
 }
 
+a {
+    display: inherit;
+    text-decoration: none;
+    color: inherit;
+}
+
 h1 {
     font-weight: 700;
     font-size: 40px;
+    margin: 1%;
+    vertical-align: text-top;
+    display: inline-block;
+}
+
+.nav_item {
+    display: inline-block;
+    margin: 1%;
+    font-weight: 300;
+    font-size: 40px;
+    float: right;
+    color: var(--color-red);
 }
 
 p {
     font-size: 15px;
     font-weight: 400;
+}
+
+.card_wrapper {
+    width: 100%;
+    margin: auto;
+    text-align: center;
 }
 
 .card {
@@ -60,6 +84,7 @@ p {
 .bio {
     display: inline-block;
     color: grey;
+    text-align: left;
 }
 
 .marble_name {
