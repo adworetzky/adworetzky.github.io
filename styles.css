@@ -56,6 +56,10 @@ h1 {
     display: inline-block;
 }
 
+nav {
+    margin-bottom: 2%;
+}
+
 .nav_item {
     /* display: inline-block; */
     margin: 1%;
@@ -68,6 +72,13 @@ h1 {
 p {
     font-size: 15px;
     font-weight: 400;
+}
+
+.intro_big {
+    font-size: 25px;
+    max-width: 50%;
+    margin: auto;
+    margin-bottom: 50px;
 }
 
 .intro_wrapper {
@@ -147,13 +158,32 @@ img {
 }
 
 @media(max-width: 920px) {
+    body {
+        min-width: 350;
+        margin-bottom: 50px;
+    }
+
+    /* nav {
+        margin-bottom: 50px;
+    } */
+
     .nav_item {
         display: block;
         margin: 0%;
+        min-width: 350px;
         padding: 0%;
         width: 100%;
+        float: left;
         font-weight: 300;
         font-size: 40px;
         color: var(--nav-green);
+    }
+
+    .intro_big {
+        font-size: 25px;
+        max-width: 100%;
+
+        margin: auto;
+        margin-bottom: 50px;
     }
 }
