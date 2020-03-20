@@ -135,7 +135,8 @@ iframe {
     width: 20%;
     height: 65%;
     min-width: 300px;
-    min-height: fit-content;
+    min-height: 540px;
+    max-height: 600px;
     margin: 10px;
     padding: 10px;
     background-color: whitesmoke;
