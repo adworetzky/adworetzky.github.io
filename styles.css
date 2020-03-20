@@ -266,9 +266,9 @@ img {
     text-shadow: 1px 1px 1px rgba(10, 10, 10, 0.7);
 }
 
-span.flip {
-    /*     animation: flip 0.7s ease forwards; */
-}
+/* span.flip {
+        animation: flip 0.7s ease forwards;
+} */
 
 @keyframes flip {
     0% {

@@ -1,6 +1,3 @@
-/*
-m4mohaiman.github.io
-*/
 function updateTimer(deadline) {
     var time = deadline - new Date();
     return {
