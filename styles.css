@@ -58,6 +58,7 @@ h1 {
 
 nav {
     margin-bottom: 2%;
+    border-bottom: 5px solid var(--nav-green);
 }
 
 .nav_item {
@@ -86,6 +87,31 @@ p {
     margin: auto;
 }
 
+.banner_card {
+    width: 100%;
+    margin-top: 2%;
+    background-color: var(--nav-green);
+}
+
+.steptitle {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    color: var(--color-black);
+    font-size: 80px;
+    margin: 1%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.stepcopy {
+    color: var(--color-black);
+    font-size: 25px;
+    display: inline-block;
+    margin: 2%;
+    vertical-align: middle;
+    max-width: 80%;
+}
+
 iframe {
     width: 100%;
     height: 100%;
@@ -94,6 +120,7 @@ iframe {
 .counter {
     margin: auto;
     height: 10%;
+    display: inline-block;
 }
 
 .card_wrapper {
@@ -157,7 +184,12 @@ img {
     z-index: 0;
 }
 
-@media(max-width: 920px) {
+.footertext {
+    font-size: 10px;
+    float: right;
+}
+
+@media(max-width: 1070px) {
     body {
         min-width: 350;
         margin-bottom: 50px;
@@ -166,14 +198,18 @@ img {
     /* nav {
         margin-bottom: 50px;
     } */
+    .nav {
+        height: 50%;
+        display: inline;
+    }
 
     .nav_item {
-        display: block;
+        display: inline-block;
         margin: 0%;
         min-width: 350px;
         padding: 0%;
         width: 100%;
-        float: left;
+        float: none;
         font-weight: 300;
         font-size: 40px;
         color: var(--nav-green);
