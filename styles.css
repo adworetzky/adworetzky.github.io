@@ -209,13 +209,14 @@ img {
 
 #main {
     width: 100%;
-    margin: 5% auto;
+    margin: 1% auto;
     text-align: center;
 }
 
 .counter_heading {
     text-align: center;
-    margin: auto;
+
+    margin-bottom: 20px;
 }
 
 #clock span {
