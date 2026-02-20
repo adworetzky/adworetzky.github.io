@@ -1,159 +1,317 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="script.js"></script>
-    <title>Marble Madness</title>
+    <title>Projects</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *:before, *:after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0d;
+            --surface: #161616;
+            --surface-hover: #1e1e1e;
+            --border: #2a2a2a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #888;
+            --accent: #64ffda;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 60px 40px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1px;
+            background-color: var(--border);
+            border-top: none;
+        }
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--surface);
+            text-decoration: none;
+            color: inherit;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .project-card:hover .card-preview::after {
+            opacity: 1;
+        }
+
+        .project-card:hover .launch-arrow {
+            transform: translate(3px, -3px);
+        }
+
+        /* ── Preview areas ── */
+
+        .card-preview {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-preview::after {
+            content: '↗';
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Line Drawing Studio preview — fine cross-hatch / contour lines */
+        .line-drawing-preview {
+            background-color: #111;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 22px,
+                    rgba(220, 220, 220, 0.07) 22px,
+                    rgba(220, 220, 220, 0.07) 23px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 22px,
+                    rgba(220, 220, 220, 0.04) 22px,
+                    rgba(220, 220, 220, 0.04) 23px
+                ),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 30px,
+                    rgba(180, 180, 180, 0.06) 30px,
+                    rgba(180, 180, 180, 0.06) 31px
+                );
+        }
+
+        .line-drawing-preview .preview-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 20px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Point Cloud Studio preview — scattered radial glows */
+        .point-cloud-preview {
+            background-color: #080c14;
+            background-image:
+                radial-gradient(circle at 25% 60%, rgba(100, 220, 255, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 75% 30%, rgba(160, 100, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 55% 75%, rgba(80, 255, 180, 0.18) 0%, transparent 35%),
+                radial-gradient(circle at 15% 20%, rgba(80, 140, 255, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(255, 100, 160, 0.12) 0%, transparent 30%);
+        }
+
+        .point-cloud-preview .preview-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 20px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+        }
+
+        /* ── Card content ── */
+
+        .card-content {
+            flex: 1;
+            padding: 24px 28px 28px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .card-content h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .launch-arrow {
+            font-size: 16px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .project-card:hover .launch-arrow {
+            color: var(--accent);
+        }
+
+        .card-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .tag {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 3px;
+        }
+
+        footer {
+            padding: 24px 40px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 40px 24px 28px;
+            }
+
+            .card-content {
+                padding: 20px 24px 24px;
+            }
+
+            footer {
+                padding: 20px 24px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- hey fam, are you in here looking at my code? I built this in 2 hours while making a game for you, leave it out. Seriously, the CSS is a mess and that red is way too dark for WCAG -->
-    <nav>
-        <h1><a href="index.html">Marble Madness</a></h1>
 
-        <h1 class="nav_item"><a href="meetthemarbles.html">/Meet the Marbles</a></h1>
-        <h1 class="nav_item"> <a href="stages.html">/Stages</a></h1>
+    <header>
+        <h1>Projects</h1>
+        <p>Interactive web tools &amp; studios</p>
+    </header>
 
-        <h1 class="nav_item"> <a href="Scores.html">/Scores</a></h1>
-    </nav>
+    <main>
 
-    <div class=intro_wrapper>
-        <p class="intro_big"> The Race Is Over!</p>
-        <!-- <p class="intro">
-            Your marbles just finished a quick and dirty Stage 3. I would like to remind you that this stage had a
-            disadvantage for marble weight. The quick turns and numerous obstacles of this stage made lighter marble
-            seem to perform better. But again, gravity is a formidable adversary.</p>
-        <p class="intro"> After a fairly mediocre performance on the first two stages, Built-like-a-plank Barbs Rogers
-            walked away with the number 1 spot for stage 3. She would like to thank her sponsors: The Bird/Hillmans,
-            Artemis: The moon goddess, and Tate's Cookies. In a post race interview, Barbs “invoked the fifth amendment”
-            47 times.</p>
-        <p class="intro">
-            Rory Walsh finished second for the day. He had a particularly heated match up with Barbs and finished only
-            .289 seconds behind. She attributes today's performance to her beanstalk like build and her team's
-            data-driven approach. The matchup has #PlankvsBeanstalk trending on Twitter.</p>
-        <p class="intro">
-            Daniel Stewart finished up strongly in the last place spot for today. We listened in on the mid race
-            commentary and Daniel seemed much more concerned with “these damn kids and their skateboards and their
-            SnapTok...” than the race.</p> -->
-        <!-- stage 4 -->
-        <p class="intro">
-            This is it, folks. You came, you rolled, you conquered. The marble race has officially come to an end. Stage
-            5 was a mess, let me tell you.</p>
-        <p class="intro"> Stage 5 gave advantage to deformed marbles. While Andie Thomas and Jeremy Alvarez knew it was
-            their time to shine, you could hear Bethany Powell curse under her breath. With physics broken, it was like
-            the wild west. But the racers knew this was for all the “marbles.” Josephine threw lettuce at Ruben. Kian
-            came out brandishing a cleaver. Stefan stole 3 identities mid race. It was a mess (it looked a little like
-            this.) But amidst the turmoil, 3 racers emerged victorious for the stage.</p>
-        <p class="intro">
-            Our top three finishers for stage 5 were 1.Andie Thomas, 2.Genevieve Henderson, and 3.Robyn Parker.</p>
-        <p class="intro">
-            Our final first-place finish for the 2020 Marble Madness Competition goes to Franklin Mason (Team Lee
-            Banse.) He would like to thank his sponsors Lee Banse, Pablo Escobar (for single-handedly importing all the
-            hippos in Colombia), and Heinz. He plans to celebrate by rubbing it in Kian James’ face while live-streaming
-            it to his base of 47,000 fans.</p>
-        <p class="intro">
-            Second place goes to Rory Walsh (Team Heather Mahendran.) Rory would like to thank her sponsor, Heather, and
-            would also like to yell at Halliburton for pulling their sponsorship of her after Stage 3. When approached
-            for comment Halliburton stated that Rory was too volatile for “even them.” Rory’s celebration will be later
-            tonight when she lights fireworks in an enclosed trailer and “lets it play out.”</p>
-        <p class="intro">
-            Our biggest surprise of this competition was perhaps our last-place finisher, Aubry Reynolds (Team Tim
-            Grose.) He planned, he executed, and he lost terribly. Handing Aubry the last place trophy was kind of like
-            pinning a participation medal on someone's chest, but involving a grown man… while crying.</p>
+        <a class="project-card"
+           href="https://adworetzky.github.io/Line-Drawing/"
+           target="_blank"
+           rel="noopener noreferrer">
+            <div class="card-preview line-drawing-preview">
+                <div class="preview-label">Line Drawing Studio</div>
+            </div>
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h2>Line Drawing Studio</h2>
+                    <span class="launch-arrow">↗</span>
+                </div>
+                <p>Upload an image and transform it into expressive line art. Renders contour lines, blind contours, stippling, and hatching — with SVG and G-code export for plotting.</p>
+                <div class="card-tags">
+                    <span class="tag">Canvas</span>
+                    <span class="tag">SVG</span>
+                    <span class="tag">G-code</span>
+                    <span class="tag">Image processing</span>
+                </div>
+            </div>
+        </a>
 
-        <p class="intro">
-            You can view the <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                overall scores here</a> or the detailed sheet of the <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=247282981">
-                Stage 5 scores here</a>
-        </p>
-    </div>
-    <h1 class="leader_heading">Overall Leaderboard</h1>
-    <div class="card_wrapper">
+        <a class="project-card"
+           href="https://adworetzky.github.io/Point-cloud-studio/"
+           target="_blank"
+           rel="noopener noreferrer">
+            <div class="card-preview point-cloud-preview">
+                <div class="preview-label">Point Cloud Studio</div>
+            </div>
+            <div class="card-content">
+                <div class="card-title-row">
+                    <h2>Point Cloud Studio</h2>
+                    <span class="launch-arrow">↗</span>
+                </div>
+                <p>Generate 3D point cloud visualizations from uploaded images. Adjust point count, radius, and noise, then apply color themes like City, Cosmic, or Bio.</p>
+                <div class="card-tags">
+                    <span class="tag">3D</span>
+                    <span class="tag">Point cloud</span>
+                    <span class="tag">WebGL</span>
+                    <span class="tag">Visualization</span>
+                </div>
+            </div>
+        </a>
 
-        <div class="card">
-            <p class="marble_name">1. Franklin Mason</p>
-            <p class="marble_age">Weight:4.742</p>
-            <p class="marble_buzzword">Deformity:5.302</p>
-            <img src="img\4343.jpg" alt="Marble">
-            <p class="bio">Franklin is a traditional software developer who is addicted to social media. People
-                often
-                compare him to a traditional hippo. He comes from a troubled family. His purpose in life is to
-                pursue
-                happiness.</p>
-        </div>
-        <div class="card">
-            <p class="marble_name">2. Rory Walsh</p>
-            <p class="marble_age">Weight:4.563</p>
-            <p class="marble_buzzword">Deformity:5.962</p>
-            <img src="img\4381.jpg" alt="Marble">
-            <p class="bio">Rory is an entertaining software developer who finds it hard to do the right thing.
-                Physically, she is built like a beanstalk. Her top quality is that she is particularly dishy. She is
-                hiding a terrible secret concerning the past.</p>
-        </div>
-        <div class="card">
-            <p class="marble_name">32. Aubry Reynolds</p>
-            <p class="marble_age">Weight:4.635</p>
-            <p class="marble_buzzword">Deformity:3.645</p>
-            <img src="img\3201.jpg" alt="Marble">
-            <p class="bio">Aubry is a greedy teenager who finds it hard to get out of bed in the mornings. People
-                often
-                compare him to a wild animal. He always carries a tape measure. He is particularly interested in
-                escaping from oppression.</p>
-        </div>
+    </main>
 
-        <!-- <p class="intro"><a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=1414455370&range=A5:K37">
-                Complete Stage Breakdown</a> // <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                Overall Scores</a>
-        </p> -->
-        <!-- stage 4 -->
-        <p class="intro"><a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=27467414">
-                Complete Stage Breakdown</a> // <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                Overall Scores</a>
-        </p>
+    <footer>
+        adworetzky.github.io
+    </footer>
 
-        <!-- </div>
-    <div id="main">
-        <h1 class="counter_heading">Stage 5</h1>
-
-        <div id="clock"></div>
-        <div id="display">
-            <span>Days</span>
-            <span>Hours</span>
-            <span>Minutes</span>
-            <span>Seconds</span>
-        </div>
-    </div> -->
-        <!-- <div class="banner_card">
-        <h2 class="steptitle">4</h2>
-        <p class="stepcopy">A long bumpy course. I'll be honest, this is hell on wheels for deformed marbles. Weight
-            doesn't seem to affect performance that much.
-        </p>
-    </div> -->
-        <!-- Stage 5 -->
-        <!-- <div class="banner_card">
-        <h2 class="steptitle">5</h2>
-        <p class="stepcopy">Because computers are dope, this stage decided to throw physics out completely. Deformed
-            marbles
-            perform almost 3 times better in this stage because let's face it, it would suck to be an ugly marble.
-        </p>
-    </div> -->
-
-
-        <!-- <p class="footertext"> Also, to hell with react.js. HTMl, CSS, and vanillaJS can still work wonders and facebook has
-        done
-        enough. *AED,
-        out*
-    </p> -->
 </body>
 
 </html>
