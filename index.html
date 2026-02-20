@@ -1,159 +1,491 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="script.js"></script>
-    <title>Marble Madness</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>adworetzky // projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:        #0b0b0b;
+      --bg2:       #0f0f0f;
+      --green:     #39ff14;
+      --green-dim: #1a6b07;
+      --green-mid: #2aaa09;
+      --green-glow: rgba(57, 255, 20, 0.18);
+      --amber:     #f0a500;
+      --text:      #b8e8a0;
+      --text-dim:  #4a7a38;
+      --border:    #1c3a12;
+      --cursor-w:  10px;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      /* CRT scanlines */
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+    }
+
+    /* Vignette overlay */
+    body::after {
+      content: '';
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center,
+        transparent 55%,
+        rgba(0,0,0,0.6) 100%
+      );
+      z-index: 100;
+    }
+
+    /* ── Terminal window chrome ── */
+
+    .terminal {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Title bar ── */
+
+    .titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red    { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green  { background: #28c840; }
+
+    .titlebar-label {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Screen body ── */
+
+    .screen {
+      flex: 1;
+      padding: 32px 28px 40px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 0 40px rgba(57,255,20,0.04);
+    }
+
+    /* ── Prompt line ── */
+
+    .prompt {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .ps-user  { color: var(--green-mid); }
+    .ps-at    { color: var(--text-dim); }
+    .ps-host  { color: var(--green); }
+    .ps-colon { color: var(--text-dim); }
+    .ps-path  { color: var(--amber); }
+    .ps-dollar{ color: var(--text); margin: 0 6px; }
+    .ps-cmd   { color: var(--text); }
+
+    /* ── Blinking cursor ── */
+
+    .cursor {
+      display: inline-block;
+      width: var(--cursor-w);
+      height: 1.1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      animation: blink 1.1s step-end infinite;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── Output sections ── */
+
+    .output {
+      margin: 4px 0 28px 0;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .output-line {
+      color: var(--text);
+    }
+
+    .output-dim {
+      color: var(--text-dim);
+    }
+
+    .section-gap {
+      margin-bottom: 32px;
+    }
+
+    /* ── Project list ── */
+
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 8px;
+    }
+
+    .project-entry {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 14px 16px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .project-entry::before {
+      content: '▶';
+      position: absolute;
+      left: -18px;
+      top: 15px;
+      color: var(--green);
+      font-size: 10px;
+      opacity: 0;
+      transition: opacity 0.15s, left 0.15s;
+    }
+
+    .project-entry:hover {
+      background: rgba(57,255,20,0.04);
+      border-color: var(--border);
+      box-shadow: 0 0 20px rgba(57,255,20,0.06), inset 1px 0 0 var(--green-dim);
+    }
+
+    .project-entry:hover::before {
+      opacity: 1;
+      left: -14px;
+    }
+
+    .proj-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .proj-index {
+      font-size: 11px;
+      color: var(--text-dim);
+      min-width: 28px;
+    }
+
+    .proj-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green);
+      text-shadow: 0 0 10px rgba(57,255,20,0.4);
+      letter-spacing: 0.02em;
+    }
+
+    .proj-slash {
+      color: var(--text-dim);
+    }
+
+    .proj-arrow {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.15s, transform 0.15s;
+    }
+
+    .project-entry:hover .proj-arrow {
+      color: var(--green);
+      transform: translate(3px, -2px);
+    }
+
+    .proj-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding-left: 38px;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-left: 38px;
+    }
+
+    .tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-mid);
+      border: 1px solid var(--green-dim);
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    /* ── Divider ── */
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── Status bar ── */
+
+    .statusbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .status-left { display: flex; gap: 24px; }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ── Boot sequence (hidden after load) ── */
+
+    #boot-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      transition: opacity 0.4s ease;
+    }
+
+    #boot-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .boot-line {
+      opacity: 0;
+      animation: appear 0.05s ease forwards;
+    }
+
+    @keyframes appear {
+      to { opacity: 1; }
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 640px) {
+      .terminal { padding: 16px 12px 40px; }
+      .screen   { padding: 24px 16px 32px; }
+      .proj-desc, .proj-tags { padding-left: 0; }
+    }
+  </style>
 </head>
-
 <body>
-    <!-- hey fam, are you in here looking at my code? I built this in 2 hours while making a game for you, leave it out. Seriously, the CSS is a mess and that red is way too dark for WCAG -->
-    <nav>
-        <h1><a href="index.html">Marble Madness</a></h1>
 
-        <h1 class="nav_item"><a href="meetthemarbles.html">/Meet the Marbles</a></h1>
-        <h1 class="nav_item"> <a href="stages.html">/Stages</a></h1>
+<!-- Boot overlay -->
+<div id="boot-overlay" aria-hidden="true">
+  <div id="boot-lines"></div>
+</div>
 
-        <h1 class="nav_item"> <a href="Scores.html">/Scores</a></h1>
-    </nav>
+<div class="terminal">
+  <div class="titlebar">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <span class="titlebar-label">adworetzky@github.io — bash — 80×24</span>
+  </div>
 
-    <div class=intro_wrapper>
-        <p class="intro_big"> The Race Is Over!</p>
-        <!-- <p class="intro">
-            Your marbles just finished a quick and dirty Stage 3. I would like to remind you that this stage had a
-            disadvantage for marble weight. The quick turns and numerous obstacles of this stage made lighter marble
-            seem to perform better. But again, gravity is a formidable adversary.</p>
-        <p class="intro"> After a fairly mediocre performance on the first two stages, Built-like-a-plank Barbs Rogers
-            walked away with the number 1 spot for stage 3. She would like to thank her sponsors: The Bird/Hillmans,
-            Artemis: The moon goddess, and Tate's Cookies. In a post race interview, Barbs “invoked the fifth amendment”
-            47 times.</p>
-        <p class="intro">
-            Rory Walsh finished second for the day. He had a particularly heated match up with Barbs and finished only
-            .289 seconds behind. She attributes today's performance to her beanstalk like build and her team's
-            data-driven approach. The matchup has #PlankvsBeanstalk trending on Twitter.</p>
-        <p class="intro">
-            Daniel Stewart finished up strongly in the last place spot for today. We listened in on the mid race
-            commentary and Daniel seemed much more concerned with “these damn kids and their skateboards and their
-            SnapTok...” than the race.</p> -->
-        <!-- stage 4 -->
-        <p class="intro">
-            This is it, folks. You came, you rolled, you conquered. The marble race has officially come to an end. Stage
-            5 was a mess, let me tell you.</p>
-        <p class="intro"> Stage 5 gave advantage to deformed marbles. While Andie Thomas and Jeremy Alvarez knew it was
-            their time to shine, you could hear Bethany Powell curse under her breath. With physics broken, it was like
-            the wild west. But the racers knew this was for all the “marbles.” Josephine threw lettuce at Ruben. Kian
-            came out brandishing a cleaver. Stefan stole 3 identities mid race. It was a mess (it looked a little like
-            this.) But amidst the turmoil, 3 racers emerged victorious for the stage.</p>
-        <p class="intro">
-            Our top three finishers for stage 5 were 1.Andie Thomas, 2.Genevieve Henderson, and 3.Robyn Parker.</p>
-        <p class="intro">
-            Our final first-place finish for the 2020 Marble Madness Competition goes to Franklin Mason (Team Lee
-            Banse.) He would like to thank his sponsors Lee Banse, Pablo Escobar (for single-handedly importing all the
-            hippos in Colombia), and Heinz. He plans to celebrate by rubbing it in Kian James’ face while live-streaming
-            it to his base of 47,000 fans.</p>
-        <p class="intro">
-            Second place goes to Rory Walsh (Team Heather Mahendran.) Rory would like to thank her sponsor, Heather, and
-            would also like to yell at Halliburton for pulling their sponsorship of her after Stage 3. When approached
-            for comment Halliburton stated that Rory was too volatile for “even them.” Rory’s celebration will be later
-            tonight when she lights fireworks in an enclosed trailer and “lets it play out.”</p>
-        <p class="intro">
-            Our biggest surprise of this competition was perhaps our last-place finisher, Aubry Reynolds (Team Tim
-            Grose.) He planned, he executed, and he lost terribly. Handing Aubry the last place trophy was kind of like
-            pinning a participation medal on someone's chest, but involving a grown man… while crying.</p>
+  <div class="screen">
 
-        <p class="intro">
-            You can view the <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                overall scores here</a> or the detailed sheet of the <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=247282981">
-                Stage 5 scores here</a>
-        </p>
+    <!-- whoami -->
+    <div class="prompt">
+      <span class="ps-user">adworetzky</span><span class="ps-at">@</span><span class="ps-host">github.io</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
+      <span class="ps-cmd">whoami</span>
     </div>
-    <h1 class="leader_heading">Overall Leaderboard</h1>
-    <div class="card_wrapper">
+    <div class="output section-gap">
+      <div class="output-line">builder of interactive web things</div>
+    </div>
 
-        <div class="card">
-            <p class="marble_name">1. Franklin Mason</p>
-            <p class="marble_age">Weight:4.742</p>
-            <p class="marble_buzzword">Deformity:5.302</p>
-            <img src="img\4343.jpg" alt="Marble">
-            <p class="bio">Franklin is a traditional software developer who is addicted to social media. People
-                often
-                compare him to a traditional hippo. He comes from a troubled family. His purpose in life is to
-                pursue
-                happiness.</p>
+    <!-- ls projects/ -->
+    <div class="prompt">
+      <span class="ps-user">adworetzky</span><span class="ps-at">@</span><span class="ps-host">github.io</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
+      <span class="ps-cmd">ls&nbsp;-l&nbsp;projects/</span>
+    </div>
+    <div class="output">
+      <div class="output-dim">total 2</div>
+    </div>
+
+    <div class="project-list" id="project-list">
+
+      <a class="project-entry"
+         href="https://adworetzky.github.io/Line-Drawing/"
+         target="_blank"
+         rel="noopener noreferrer">
+        <div class="proj-header">
+          <span class="proj-index">01</span>
+          <span class="proj-name">line-drawing-studio<span class="proj-slash">/</span></span>
+          <span class="proj-arrow">↗</span>
         </div>
-        <div class="card">
-            <p class="marble_name">2. Rory Walsh</p>
-            <p class="marble_age">Weight:4.563</p>
-            <p class="marble_buzzword">Deformity:5.962</p>
-            <img src="img\4381.jpg" alt="Marble">
-            <p class="bio">Rory is an entertaining software developer who finds it hard to do the right thing.
-                Physically, she is built like a beanstalk. Her top quality is that she is particularly dishy. She is
-                hiding a terrible secret concerning the past.</p>
+        <div class="proj-desc">Upload an image and transform it into expressive line art — contour lines, stippling, hatching. SVG &amp; G-code export for pen plotting.</div>
+        <div class="proj-tags">
+          <span class="tag">canvas</span>
+          <span class="tag">svg</span>
+          <span class="tag">g-code</span>
+          <span class="tag">image processing</span>
         </div>
-        <div class="card">
-            <p class="marble_name">32. Aubry Reynolds</p>
-            <p class="marble_age">Weight:4.635</p>
-            <p class="marble_buzzword">Deformity:3.645</p>
-            <img src="img\3201.jpg" alt="Marble">
-            <p class="bio">Aubry is a greedy teenager who finds it hard to get out of bed in the mornings. People
-                often
-                compare him to a wild animal. He always carries a tape measure. He is particularly interested in
-                escaping from oppression.</p>
+      </a>
+
+      <a class="project-entry"
+         href="https://adworetzky.github.io/Point-cloud-studio/"
+         target="_blank"
+         rel="noopener noreferrer">
+        <div class="proj-header">
+          <span class="proj-index">02</span>
+          <span class="proj-name">point-cloud-studio<span class="proj-slash">/</span></span>
+          <span class="proj-arrow">↗</span>
         </div>
-
-        <!-- <p class="intro"><a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=1414455370&range=A5:K37">
-                Complete Stage Breakdown</a> // <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                Overall Scores</a>
-        </p> -->
-        <!-- stage 4 -->
-        <p class="intro"><a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=27467414">
-                Complete Stage Breakdown</a> // <a class="intextlink"
-                href="https://docs.google.com/spreadsheets/d/1xlRsXnTQ03-MNh8nYNKYFA_uW_MMsQNN8JZ6RW7qQSU/edit#gid=0&range=A1:M34">
-                Overall Scores</a>
-        </p>
-
-        <!-- </div>
-    <div id="main">
-        <h1 class="counter_heading">Stage 5</h1>
-
-        <div id="clock"></div>
-        <div id="display">
-            <span>Days</span>
-            <span>Hours</span>
-            <span>Minutes</span>
-            <span>Seconds</span>
+        <div class="proj-desc">Generate 3D point cloud visualizations from uploaded images. Tweak density, radius, and noise — then apply themes like City, Cosmic, or Bio.</div>
+        <div class="proj-tags">
+          <span class="tag">webgl</span>
+          <span class="tag">3d</span>
+          <span class="tag">point cloud</span>
+          <span class="tag">visualization</span>
         </div>
-    </div> -->
-        <!-- <div class="banner_card">
-        <h2 class="steptitle">4</h2>
-        <p class="stepcopy">A long bumpy course. I'll be honest, this is hell on wheels for deformed marbles. Weight
-            doesn't seem to affect performance that much.
-        </p>
-    </div> -->
-        <!-- Stage 5 -->
-        <!-- <div class="banner_card">
-        <h2 class="steptitle">5</h2>
-        <p class="stepcopy">Because computers are dope, this stage decided to throw physics out completely. Deformed
-            marbles
-            perform almost 3 times better in this stage because let's face it, it would suck to be an ugly marble.
-        </p>
-    </div> -->
+      </a>
 
+    </div>
 
-        <!-- <p class="footertext"> Also, to hell with react.js. HTMl, CSS, and vanillaJS can still work wonders and facebook has
-        done
-        enough. *AED,
-        out*
-    </p> -->
+    <hr class="divider">
+
+    <!-- waiting prompt -->
+    <div class="prompt">
+      <span class="ps-user">adworetzky</span><span class="ps-at">@</span><span class="ps-host">github.io</span><span class="ps-colon">:</span><span class="ps-path">~</span><span class="ps-dollar">$</span>
+      <span class="cursor" aria-hidden="true"></span>
+    </div>
+
+    <!-- Status bar -->
+    <div class="statusbar">
+      <div class="status-left">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>online</span>
+        </div>
+        <span>2 projects</span>
+      </div>
+      <span>adworetzky.github.io</span>
+    </div>
+
+  </div><!-- /screen -->
+</div><!-- /terminal -->
+
+<script>
+  // ── Boot sequence ──
+  const bootLines = [
+    'BIOS v2.1.0 ... OK',
+    'Loading kernel ...',
+    'Mounting filesystem ...',
+    'Starting network ...',
+    'adworetzky@github.io:~$ _',
+  ];
+
+  const container = document.getElementById('boot-lines');
+  const overlay   = document.getElementById('boot-overlay');
+
+  let delay = 0;
+  bootLines.forEach((text, i) => {
+    delay += i === bootLines.length - 1 ? 260 : 110 + Math.random() * 80;
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'boot-line';
+      el.textContent = text;
+      el.style.color = i === bootLines.length - 1 ? '#39ff14' : '#2aaa09';
+      container.appendChild(el);
+    }, delay);
+  });
+
+  delay += 420;
+  setTimeout(() => {
+    overlay.classList.add('fade-out');
+    setTimeout(() => overlay.remove(), 400);
+  }, delay);
+</script>
 </body>
-
 </html>
